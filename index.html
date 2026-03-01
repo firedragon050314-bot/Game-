@@ -1,0 +1,29 @@
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><style>
+body { margin: 0; overflow: hidden; background: #222; font-family: sans-serif; }
+canvas { display: block; background: #000; }
+</style></head><body><canvas id="g"></canvas><script>
+const c=document.getElementById('g'), x=c.getContext('2d');
+let w, h, p, obs=[], score=0, frame=0;
+function init() {
+  w=c.width=window.innerWidth; h=c.height=window.innerHeight;
+  p={y:h-100, v:0, size:40}; obs=[]; score=0;
+}
+window.onresize=init; init();
+function draw() {
+  x.fillStyle='#000'; x.fillRect(0,0,w,h);
+  x.fillStyle='#0f0'; x.fillRect(50, p.y, p.size, p.size); // Player
+  p.v += 0.8; p.y += p.v; // Gravity
+  if(p.y > h-100) { p.y=h-100; p.v=0; }
+  if(frame%100===0) obs.push({x:w, w:30, h:40+Math.random()*40});
+  x.fillStyle='#f00';
+  obs.forEach((o,i)=>{
+    o.x -= 6; x.fillRect(o.x, h-100-o.h, o.w, o.h);
+    if(o.x<90 && o.x+o.w>50 && p.y+p.size>h-100-o.h) init(); // Hit
+    if(o.x < -o.w) { obs.splice(i,1); score++; }
+  });
+  x.fillStyle='#fff'; x.fillText("Score: "+score, 20, 40);
+  frame++; requestAnimationFrame(draw);
+}
+window.ontouchstart=()=>{ if(p.y>=h-100) p.v=-15; };
+draw();
+</script></body></html>
